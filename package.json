@@ -19,7 +19,24 @@
   "homepage": "https://github.com/sundriedtomato12/project3-combat#readme",
   "dependencies": {
     "cookie-parser": "^1.4.6",
+    "ejs": "^3.1.8",
     "express": "^4.18.1",
-    "method-override": "^3.0.0"
+    "method-override": "^3.0.0",
+    "node-sass": "^7.0.1",
+    "nodemon": "^2.0.16",
+    "pg": "^8.7.3",
+    "sass-loader": "^13.0.0",
+    "sequelize": "^6.21.0",
+    "url": "^0.11.0"
+  },
+  "devDependencies": {
+    "css-loader": "^6.7.1",
+    "eslint": "^8.18.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "mini-css-extract-plugin": "^2.6.1",
+    "sequelize-cli": "^6.4.1",
+    "style-loader": "^3.3.1",
+    "webpack-cli": "^4.10.0"
   }
 }

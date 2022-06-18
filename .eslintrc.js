@@ -1,37 +1,23 @@
 module.exports = {
   env: {
     browser: true,
-    es2021: true,
-    node: true,
+    es2020: true,
   },
   extends: [
-    'plugin:react/recommended',
-    'airbnb',
+    'airbnb-base',
   ],
   parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
-    ecmaVersion: 12,
-    sourceType: 'module',
+    ecmaVersion: 11,
   },
-  plugins: [
-    'react',
-  ],
   rules: {
     // Don't enforce control flow closing curly brace needs to be
-    // on same line as next control flow opening statement.
-    // This is so we can add comments above control flow statements such as else if or else.
+    // on same line as next control flow opening statement
     'brace-style': 'off',
     // Require import extensions for all imports except packages because
     // SWE1 doesn't use a bundler for executing Node, thus Node will fail
     // when importing local modules without the .js extension.
     // https://github.com/airbnb/javascript/issues/2134
     'import/extensions': ['error', 'ignorePackages'],
-    // Disable dependency checking. By default, ESLint complains when we import
-    // dev dependencies such as React, even though technically React is only "used"
-    // in compilation (what we consider development) and not in production (in the client).
-    'import/no-extraneous-dependencies': 'off',
     // Disable linebreak style to prevent ESLint errors on Windows line endings
     // https://eslint.org/docs/rules/linebreak-style
     'linebreak-style': 'off',
@@ -39,8 +25,5 @@ module.exports = {
     'no-console': 'off',
     // Allow function param reassign for array or object elements or properties
     'no-param-reassign': ['error', { props: false }],
-    // Allows JSX code in .js files
-    // Helps prevent students from worrying about file extensions in React intro.
-    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
   },
 };
