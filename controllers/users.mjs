@@ -45,13 +45,16 @@ export default function initUsersController(db) {
           game_state: JSON.stringify({
             status: 'inactive', currentOpponent: null, level: { player: 1, opponent: 1 }, health: { player: null, opponent: null }, gameStats: { played: 0, won: 0, lost: 0 },
           }),
+          created_at: new Date(),
+          updated_at: new Date(),
         },
       });
-      if (user) {
-        console.log('existing user', user);
-        res.send('<h1>Username exists! Please try another username<br><a href="/login">Login Page</a></h1>');
-      } else if (created) {
+      if (created) {
+        console.log('new user', user);
         res.send('<h1>Sign up successful! Please login to play<br><a href="/login">Login Page</a></h1>');
+      } else if (user) {
+        console.log('existing user', user);
+        res.send('<h1>Username exists! Please use another username<br><a href="/login">Login Page</a></h1>');
       }
     }
 
