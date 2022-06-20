@@ -1,10 +1,13 @@
 import db from './models/index.mjs';
 
-import { resolve } from 'path';
+import initUsersController from './controllers/users.mjs';
 
 export default function bindRoutes(app) {
+  const UsersController = initUsersController(db);
 
-  app.get('/', (request, response) => {
-    response.render('main');
-  });
+  app.get('/', UsersController.root);
+  app.get('/login', UsersController.loginpage);
+  app.post('/login', UsersController.login);
+  app.post('/signup', UsersController.signup);
+  app.get('/logout', UsersController.logout);
 }
