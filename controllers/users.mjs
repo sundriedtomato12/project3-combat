@@ -2,8 +2,44 @@ import { request, response } from 'express';
 import jsSHA from 'jssha';
 
 export default function initUsersController(db) {
-  const root = (req, res) => {
-    res.render('main', { loggedIn: req.cookies.loggedIn });
+  const player = async (req, res) => {
+    if (req.cookies.userId !== undefined) {
+      try {
+        const player = await db.User.findOne({
+          where: {
+            id: req.cookies.userId,
+          },
+        });
+        const playerInfo = {
+          id: player.id,
+          username: player.username,
+          game_state: player.game_state,
+          loggedIn: req.cookies.loggedIn,
+        };
+        console.log('player info');
+        console.log(playerInfo);
+        res.json(playerInfo);
+      }
+      catch (error) {
+        console.log(error);
+      }
+    } else {
+      res.json(
+        {
+          loggedIn: 'false',
+        },
+      );
+    }
+  };
+
+  const root = async (req, res) => {
+    let loggedIn;
+    if (req.cookies.loggedIn === true) {
+      loggedIn = true;
+    } else {
+      loggedIn = false;
+    }
+    res.render('main', { loggedIn });
   };
 
   const loginpage = (req, res) => {
@@ -35,13 +71,14 @@ export default function initUsersController(db) {
   };
 
   const signup = async (req, res) => {
+    console.log(req.body);
     try {
       const [user, created] = await db.User.findOrCreate({
         where: {
-          username: req.body.signupusername,
+          username: req.body.username,
         },
         defaults: {
-          password: req.body.signuppassword,
+          password: req.body.password,
           game_state: JSON.stringify({
             status: 'inactive', currentOpponent: null, level: { player: 1, opponent: 1 }, health: { player: null, opponent: null }, gameStats: { played: 0, won: 0, lost: 0 },
           }),
@@ -51,10 +88,10 @@ export default function initUsersController(db) {
       });
       if (created) {
         console.log('new user', user);
-        res.send('<h1>Sign up successful! Please login to play<br><a href="/login">Login Page</a></h1>');
+        res.json({ newUser: true });
       } else if (user) {
         console.log('existing user', user);
-        res.send('<h1>Username exists! Please use another username<br><a href="/login">Login Page</a></h1>');
+        res.json({ existingUser: true });
       }
     }
 
@@ -70,6 +107,6 @@ export default function initUsersController(db) {
   };
 
   return {
-    root, loginpage, login, signup, logout,
+    root, loginpage, login, signup, logout, player,
   };
 }
