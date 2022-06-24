@@ -6,9 +6,11 @@ export default function bindRoutes(app) {
   const UsersController = initUsersController(db);
 
   app.get('/', UsersController.root);
-  app.get('/playerInfo', UsersController.player);
+  app.get('/playerInfo', UsersController.getPlayer);
   app.get('/login', UsersController.loginpage);
   app.post('/login', UsersController.login);
   app.post('/signup', UsersController.signup);
   app.get('/logout', UsersController.logout);
+  app.put('/battle', UsersController.battle);
+  app.put('/attack', UsersController.attack);
 }

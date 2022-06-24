@@ -18,9 +18,6 @@ export default function userModel(sequelize, DataTypes) {
       },
       game_state: {
         type: DataTypes.JSON,
-        defaultValue: {
-          status: 'inactive', currentOpponent: null, level: { player: 1, opponent: 1 }, health: { player: null, opponent: null }, gameStats: { played: 0, won: 0, lost: 0 },
-        },
       },
       created_at: {
         allowNull: false,

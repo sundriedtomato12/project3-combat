@@ -11,21 +11,39 @@ gameDiv.setAttribute('id', 'game-div');
 const gameStats = document.createElement('p');
 gameStats.setAttribute('id', 'game-stats');
 
+const battleDiv = document.createElement('div');
+battleDiv.setAttribute('id', 'battle-div');
+
+const playerBox = document.createElement('span');
+playerBox.setAttribute('id', 'player-box');
+
+const playerInfo = document.createElement('p');
+playerInfo.setAttribute('id', 'player-info');
+
+const opponentBox = document.createElement('span');
+opponentBox.setAttribute('id', 'opponent-box');
+
+const opponentInfo = document.createElement('p');
+opponentInfo.setAttribute('id', 'opponent-info');
+
 const gameButtons = document.createElement('div');
 gameButtons.setAttribute('id', 'game-buttons');
 
-const loginOrLogout = document.createElement('a');
+const loginOrLogout = document.createElement('button');
 loginOrLogout.setAttribute('id', 'login-or-logout');
+
+const battleButton = document.createElement('button');
+battleButton.setAttribute('id', 'battle-button');
 
 const loginButton = document.getElementById('login-button');
 const signupButton = document.getElementById('signup-button');
-const logoutButton = document.getElementById('login-or-logout');
 
 if (window.location.pathname === '/') {
   document.body.appendChild(headerDiv);
   headerDiv.appendChild(header);
   document.body.appendChild(gameDiv);
   gameDiv.appendChild(gameStats);
+  document.body.appendChild(battleDiv);
   document.body.appendChild(gameButtons);
 
   axios.get('/playerInfo').then((response) => {
@@ -35,15 +53,40 @@ if (window.location.pathname === '/') {
     if (response.data.loggedIn === 'false') {
       gameStats.innerHTML = 'Welcome! Please log in to play!';
       loginOrLogout.innerHTML = 'Login';
-      loginOrLogout.href = '/login';
-    } else {
-      gameStats.innerHTML = `Welcome, ${response.data.username}!`;
+      loginOrLogout.addEventListener('click', () => {
+        window.location.pathname = '/login';
+      });
+    } else if (response.data.loggedIn === 'true') {
       loginOrLogout.innerHTML = 'Logout';
-      loginOrLogout.href = '/logout';
-      logoutButton.addEventListener('click', () => {
+      loginOrLogout.addEventListener('click', () => {
+        window.location.pathname = '/logout';
         axios.get('/logout').catch((error) => console.log(error)); });
-    }
-  }).catch((error) => console.log(error));
+      if (response.data.game_state.status === 'inactive') {
+        gameStats.innerHTML = `Welcome, ${response.data.username}!<br>You are currently level ${response.data.game_state.level.player}<br>You have played ${response.data.game_state.gameStats.played} games in total and won ${response.data.game_state.gameStats.won} games so far`;
+
+        battleButton.innerHTML = 'Battle!';
+        battleButton.onclick = () => {
+          axios.put('/battle').then((res) => {
+            console.log(res.data);
+            gameStats.innerHTML = 'Battle begins!';
+            battleDiv.appendChild(playerBox);
+            battleDiv.appendChild(opponentBox);
+            playerBox.appendChild(playerInfo);
+            opponentBox.appendChild(opponentInfo);
+            playerInfo.innerHTML = response.data.username;
+          });
+        };
+        gameButtons.appendChild(battleButton);
+      } else if (response.data.game_state.status === 'active') {
+        console.log('battle active');
+        gameStats.innerHTML = 'Battle-in-progress!';
+        battleDiv.appendChild(playerBox);
+        battleDiv.appendChild(opponentBox);
+        playerBox.appendChild(playerInfo);
+        opponentBox.appendChild(opponentInfo);
+        playerInfo.innerHTML = response.data.username;
+      }
+    } }).catch((error) => console.log(error));
 }
 
 if (window.location.pathname === '/login') {
