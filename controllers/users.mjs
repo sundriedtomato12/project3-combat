@@ -1,5 +1,21 @@
-import { request, response } from 'express';
+import express from 'express';
 import jsSHA from 'jssha';
+
+const SALT = 'ILOVECHICKEN';
+
+export const generateHash = (string) => {
+  const shaObj = new jsSHA('SHA-512', 'TEXT', { encoding: 'UTF8' });
+  const unhashedCookieString = `${string}-${SALT}`;
+  shaObj.update(unhashedCookieString);
+  const hashedCookieString = shaObj.getHash('HEX');
+  return hashedCookieString;
+};
+
+// compare value between two hasesh, return true/false
+export const verifyHash = (input, hashExpected) => {
+  const hashedInput = generateHash(input);
+  return hashedInput === hashExpected;
+};
 
 export default function initUsersController(db) {
   const getPlayer = async (req, res) => {
@@ -61,8 +77,8 @@ export default function initUsersController(db) {
       if (playerInfo === null) {
         res.send('<h1>There was an error! Please try logging in again.<br><a href="/login">Login Page</a></h1>');
       } else if (playerInfo != null) {
-        if (req.body.loginpassword === playerInfo.password) {
-          res.cookie('loggedIn', true);
+        if (verifyHash(req.body.loginpassword, playerInfo.password)) {
+          res.cookie('loggedIn', generateHash(playerInfo.username));
           res.cookie('userId', playerInfo.id);
           res.redirect('/');
         } else {
@@ -83,7 +99,7 @@ export default function initUsersController(db) {
           username: req.body.username,
         },
         defaults: {
-          password: req.body.password,
+          password: generateHash(req.body.password),
           level: 1,
           game_state: {
             status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: 1, health: { player: null, opponent: null }, gameStats: { played: 0, won: 0, lost: 0 },
@@ -221,7 +237,7 @@ export default function initUsersController(db) {
         };
 
         res.json(playerInfo);
-      } else {
+      } else if (newHealth === null && player.level !== 4) {
         const updatedPlayer = await player.update({
           level: player.level + 1,
           game_state: {
@@ -236,6 +252,25 @@ export default function initUsersController(db) {
           game_state: updatedPlayer.game_state,
           damage: damageDone,
           game: 'won',
+          loggedIn: req.cookies.loggedIn,
+        };
+
+        res.json(playerInfo);
+      } else if (newHealth === null && player.level === 4) {
+        const updatedPlayer = await player.update({
+          level: 1,
+          game_state: {
+            status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: null, health: { player: null, opponent: null }, gameStats: { played: player.game_state.gameStats.played + 1, won: player.game_state.gameStats.won + 1, lost: player.game_state.gameStats.lost },
+          },
+          updated_at: new Date(),
+        });
+
+        const playerInfo = {
+          id: updatedPlayer.id,
+          username: updatedPlayer.username,
+          game_state: updatedPlayer.game_state,
+          damage: damageDone,
+          game: 'reborn',
           loggedIn: req.cookies.loggedIn,
         };
 

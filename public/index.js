@@ -54,7 +54,6 @@ if (window.location.pathname === '/') {
   gameDiv.appendChild(gameStats);
   document.body.appendChild(battleDiv);
   document.body.appendChild(gameButtons);
-
   axios.get('/playerInfo').then((response) => {
     console.log('response data!!');
     console.log(response.data);
@@ -97,7 +96,10 @@ if (window.location.pathname === '/') {
         attackButton.onclick = () => {
           axios.put('/attack').then((res) => {
             if (res.data.game === 'won') {
-              alert(`You did ${res.data.damage} damage! You won the battle!`);
+              alert(`You did ${res.data.damage} damage! You won the battle and levelled up!`);
+              window.location.reload();
+            } else if (res.data.game === 'reborn') {
+              alert(`You did ${res.data.damage} damage! You won the battle and you are reborn as a chick! Back to level 1 :P`);
               window.location.reload();
             } else {
               alert(`You did ${res.data.damage} damage!`);

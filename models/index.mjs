@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize';
 import url from 'url';
+import 'dotenv/config';
 import allConfig from '../config/config.js';
 import userModel from './user.mjs';
 
