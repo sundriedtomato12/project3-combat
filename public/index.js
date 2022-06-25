@@ -35,6 +35,15 @@ loginOrLogout.setAttribute('id', 'login-or-logout');
 const battleButton = document.createElement('button');
 battleButton.setAttribute('id', 'battle-button');
 
+const endBattleButton = document.createElement('button');
+endBattleButton.setAttribute('id', 'end-battle-button');
+
+const attackButton = document.createElement('button');
+attackButton.setAttribute('id', 'attack-button');
+
+const defendButton = document.createElement('button');
+defendButton.setAttribute('id', 'defend-button');
+
 const loginButton = document.getElementById('login-button');
 const signupButton = document.getElementById('signup-button');
 
@@ -62,19 +71,13 @@ if (window.location.pathname === '/') {
         window.location.pathname = '/logout';
         axios.get('/logout').catch((error) => console.log(error)); });
       if (response.data.game_state.status === 'inactive') {
-        gameStats.innerHTML = `Welcome, ${response.data.username}!<br>You are currently level ${response.data.game_state.level.player}<br>You have played ${response.data.game_state.gameStats.played} games in total and won ${response.data.game_state.gameStats.won} games so far`;
+        gameStats.innerHTML = `Welcome, ${response.data.username}!<br>You are currently level ${response.data.level}<br>You have played ${response.data.game_state.gameStats.played} games in total and won ${response.data.game_state.gameStats.won} games so far`;
 
         battleButton.innerHTML = 'Battle!';
         battleButton.onclick = () => {
-          axios.put('/battle').then((res) => {
-            console.log(res.data);
-            gameStats.innerHTML = 'Battle begins!';
-            battleDiv.appendChild(playerBox);
-            battleDiv.appendChild(opponentBox);
-            playerBox.appendChild(playerInfo);
-            opponentBox.appendChild(opponentInfo);
-            playerInfo.innerHTML = response.data.username;
-          });
+          axios.put('/battle').then(() => {
+            window.location.reload();
+          }).catch((error) => console.log(error));
         };
         gameButtons.appendChild(battleButton);
       } else if (response.data.game_state.status === 'active') {
@@ -84,7 +87,50 @@ if (window.location.pathname === '/') {
         battleDiv.appendChild(opponentBox);
         playerBox.appendChild(playerInfo);
         opponentBox.appendChild(opponentInfo);
-        playerInfo.innerHTML = response.data.username;
+        gameButtons.appendChild(attackButton);
+        gameButtons.appendChild(defendButton);
+        gameButtons.appendChild(endBattleButton);
+        playerInfo.innerHTML = `${response.data.username}<br>Level ${response.data.level}<br>${response.data.game_state.health.player} HP`;
+        opponentInfo.innerHTML = `${response.data.game_state.currentOpponent}<br>Level ${response.data.game_state.opponentLevel}<br>${response.data.game_state.health.opponent} HP`;
+
+        attackButton.innerHTML = 'Attack!';
+        attackButton.onclick = () => {
+          axios.put('/attack').then((res) => {
+            if (res.data.game === 'won') {
+              alert(`You did ${res.data.damage} damage! You won the battle!`);
+              window.location.reload();
+            } else {
+              alert(`You did ${res.data.damage} damage!`);
+              window.location.reload();
+            }
+          }).catch((error) => console.log(error));
+        };
+
+        defendButton.innerHTML = 'Defend!';
+        defendButton.onclick = () => {
+          axios.put('/defend').then((res) => {
+            if (res.data.game === 'lost') {
+              alert(`Opponent did ${res.data.damage} damage! You're outta HP, man, you lost!`);
+              window.location.reload();
+            } else {
+              alert(`Opponent did ${res.data.damage} damage!`);
+              window.location.reload();
+            }
+          }).catch((error) => console.log(error));
+        };
+
+        endBattleButton.innerHTML = 'Flee and End Battle!';
+        endBattleButton.onclick = () => {
+          axios.put('/endBattle').then(() => {
+            window.location.reload();
+          }).catch((error) => console.log(error));
+        };
+
+        if (response.data.game_state.currentTurn === 'player') {
+          document.getElementById('defend-button').disabled = true;
+        } else if (response.data.game_state.currentTurn === 'opponent') {
+          document.getElementById('attack-button').disabled = true;
+        }
       }
     } }).catch((error) => console.log(error));
 }

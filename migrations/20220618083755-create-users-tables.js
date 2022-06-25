@@ -15,6 +15,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING,
       },
+      level: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      },
       game_state: {
         type: Sequelize.JSON,
       },

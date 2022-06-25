@@ -16,6 +16,10 @@ export default function userModel(sequelize, DataTypes) {
         allowNull: false,
         type: DataTypes.STRING,
       },
+      level: {
+        allowNull: false,
+        type: DataTypes.INTEGER,
+      },
       game_state: {
         type: DataTypes.JSON,
       },

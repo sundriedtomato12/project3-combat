@@ -12,5 +12,7 @@ export default function bindRoutes(app) {
   app.post('/signup', UsersController.signup);
   app.get('/logout', UsersController.logout);
   app.put('/battle', UsersController.battle);
+  app.put('/endBattle', UsersController.endBattle);
   app.put('/attack', UsersController.attack);
+  app.put('/defend', UsersController.defend);
 }

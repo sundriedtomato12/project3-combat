@@ -13,6 +13,7 @@ export default function initUsersController(db) {
         const playerInfo = {
           id: player.id,
           username: player.username,
+          level: player.level,
           game_state: player.game_state,
           loggedIn: req.cookies.loggedIn,
         };
@@ -83,8 +84,9 @@ export default function initUsersController(db) {
         },
         defaults: {
           password: req.body.password,
+          level: 1,
           game_state: {
-            status: 'inactive', currentOpponent: null, level: { player: 1, opponent: 1 }, health: { player: null, opponent: null }, gameStats: { played: 0, won: 0, lost: 0 },
+            status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: 1, health: { player: null, opponent: null }, gameStats: { played: 0, won: 0, lost: 0 },
           },
           created_at: new Date(),
           updated_at: new Date(),
@@ -118,28 +120,70 @@ export default function initUsersController(db) {
         },
       });
 
+      const opponents = await db.User.findAll({
+        attributes: ['username'],
+        where: { level: player.level },
+      });
+
+      const opponentArray = [];
+
+      for (let i = 0; i < opponents.length; i += 1) {
+        if (opponents[i].username !== player.username) {
+          opponentArray.push(opponents[i].username);
+        }
+      }
+
+      console.log('opponent array:');
+      console.log(opponentArray);
+
+      const opponentName = opponentArray[Math.floor(Math.random() * opponentArray.length)];
+      console.log('opponent name:');
+      console.log(opponentName);
+
+      const opponentInfo = await db.User.findOne({
+        where: { username: opponentName },
+      });
+
       const updatedPlayer = await player.update({
         game_state: {
-          status: 'active', currentOpponent: null, level: { player: player.game_state.level.player, opponent: player.game_state.level.opponent }, health: { player: player.game_state.level.player * 100, opponent: player.game_state.level.opponent * 100 }, gameStats: { played: player.game_state.gameStats.played, won: player.game_state.gameStats.won, lost: player.game_state.gameStats.lost },
+          status: 'active', currentOpponent: opponentName, currentTurn: 'player', opponentLevel: opponentInfo.level, health: { player: player.level * 100, opponent: opponentInfo.level * 100 }, gameStats: { played: player.game_state.gameStats.played, won: player.game_state.gameStats.won, lost: player.game_state.gameStats.lost },
         },
         updated_at: new Date(),
       });
 
-      const playerInfo = {
-        id: updatedPlayer.id,
-        username: updatedPlayer.username,
-        game_state: updatedPlayer.game_state,
-        loggedIn: req.cookies.loggedIn,
-      };
-
-      res.json(playerInfo);
+      res.json(updatedPlayer);
     }
     catch (error) {
       console.log(error);
     }
   };
 
-  const damage = (healthPoints) => Math.floor(Math.random() * healthPoints) + 1;
+  const endBattle = async (req, res) => {
+    try {
+      const player = await db.User.findOne({
+        where: {
+          id: req.cookies.userId,
+        },
+      });
+
+      const updatedPlayer = await player.update({
+        game_state: {
+          status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: null, health: { player: null, opponent: null }, gameStats: { played: player.game_state.gameStats.played, won: player.game_state.gameStats.won, lost: player.game_state.gameStats.lost },
+        },
+        updated_at: new Date(),
+      });
+
+      res.json(updatedPlayer);
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
+
+  const damage = (healthPoints) => {
+    const damageDone = Math.floor(Math.random() * healthPoints) + 1;
+    return damageDone;
+  };
 
   const attack = async (req, res) => {
     try {
@@ -150,29 +194,114 @@ export default function initUsersController(db) {
       });
 
       const damageDone = damage(player.game_state.health.opponent);
-      let newHealth;
+      console.log('damage:');
+      console.log(damageDone);
+      let newHealth = 0;
       if (damageDone >= player.game_state.health.opponent) {
         newHealth = null;
       } else {
         newHealth = player.game_state.health.opponent - damageDone;
       }
 
-      const updatedPlayer = await player.update({
-        game_state: {
-          status: 'active', currentOpponent: player.game_state.currentOpponent, level: { player: player.game_state.level.player, opponent: player.game_state.level.opponent }, health: { player: player.game_state.health.player, opponent: newHealth }, gameStats: { played: player.game_state.gameStats.played, won: player.game_state.gameStats.won, lost: player.game_state.gameStats.lost },
+      if (newHealth !== null) {
+        const updatedPlayer = await player.update({
+          game_state: {
+            status: 'active', currentOpponent: player.game_state.currentOpponent, currentTurn: 'opponent', opponentLevel: player.game_state.opponentLevel, health: { player: player.game_state.health.player, opponent: newHealth }, gameStats: { played: player.game_state.gameStats.played, won: player.game_state.gameStats.won, lost: player.game_state.gameStats.lost },
+          },
+          updated_at: new Date(),
+        });
+
+        const playerInfo = {
+          id: updatedPlayer.id,
+          username: updatedPlayer.username,
+          game_state: updatedPlayer.game_state,
+          damage: damageDone,
+          game: 'ongoing',
+          loggedIn: req.cookies.loggedIn,
+        };
+
+        res.json(playerInfo);
+      } else {
+        const updatedPlayer = await player.update({
+          level: player.level + 1,
+          game_state: {
+            status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: null, health: { player: null, opponent: null }, gameStats: { played: player.game_state.gameStats.played + 1, won: player.game_state.gameStats.won + 1, lost: player.game_state.gameStats.lost },
+          },
+          updated_at: new Date(),
+        });
+
+        const playerInfo = {
+          id: updatedPlayer.id,
+          username: updatedPlayer.username,
+          game_state: updatedPlayer.game_state,
+          damage: damageDone,
+          game: 'won',
+          loggedIn: req.cookies.loggedIn,
+        };
+
+        res.json(playerInfo);
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
+
+  const defend = async (req, res) => {
+    try {
+      const player = await db.User.findOne({
+        where: {
+          id: req.cookies.userId,
         },
-        updated_at: new Date(),
       });
 
-      const playerInfo = {
-        id: updatedPlayer.id,
-        username: updatedPlayer.username,
-        game_state: updatedPlayer.game_state,
-        damage: damageDone,
-        loggedIn: req.cookies.loggedIn,
-      };
+      const damageDone = damage(player.game_state.health.player / 2);
+      console.log('damage:');
+      console.log(damageDone);
+      let newHealth = 0;
+      if (damageDone >= player.game_state.health.player) {
+        newHealth = null;
+      } else {
+        newHealth = player.game_state.health.player - damageDone;
+      }
 
-      res.json(playerInfo);
+      if (newHealth !== null) {
+        const updatedPlayer = await player.update({
+          game_state: {
+            status: 'active', currentOpponent: player.game_state.currentOpponent, currentTurn: 'player', opponentLevel: player.game_state.opponentLevel, health: { player: newHealth, opponent: player.game_state.health.opponent }, gameStats: { played: player.game_state.gameStats.played, won: player.game_state.gameStats.won, lost: player.game_state.gameStats.lost },
+          },
+          updated_at: new Date(),
+        });
+
+        const playerInfo = {
+          id: updatedPlayer.id,
+          username: updatedPlayer.username,
+          game_state: updatedPlayer.game_state,
+          damage: damageDone,
+          game: 'ongoing',
+          loggedIn: req.cookies.loggedIn,
+        };
+
+        res.json(playerInfo);
+      } else {
+        const updatedPlayer = await player.update({
+          game_state: {
+            status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: null, health: { player: null, opponent: null }, gameStats: { played: player.game_state.gameStats.played + 1, won: player.game_state.gameStats.won, lost: player.game_state.gameStats.lost + 1 },
+          },
+          updated_at: new Date(),
+        });
+
+        const playerInfo = {
+          id: updatedPlayer.id,
+          username: updatedPlayer.username,
+          game_state: updatedPlayer.game_state,
+          damage: damageDone,
+          game: 'lost',
+          loggedIn: req.cookies.loggedIn,
+        };
+
+        res.json(playerInfo);
+      }
     }
     catch (error) {
       console.log(error);
@@ -180,6 +309,6 @@ export default function initUsersController(db) {
   };
 
   return {
-    root, loginpage, login, signup, logout, getPlayer, battle, attack,
+    root, loginpage, login, signup, logout, getPlayer, battle, attack, endBattle, defend,
   };
 }

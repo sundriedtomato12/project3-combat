@@ -14,3 +14,12 @@ input {
 div {
   border: solid 1px black;
 }
+
+#battle-div {
+  display: flex;
+}
+
+#player-box,
+#opponent-box {
+  flex: 1 1 50%;
+}
