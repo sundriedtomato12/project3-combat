@@ -15,6 +15,15 @@ div {
   border: solid 1px black;
 }
 
+img {
+  border: solid 1px red;
+  width: 150px;
+  height: 150px;
+}
+
+#player-img {
+}
+
 #battle-div {
   display: flex;
 }

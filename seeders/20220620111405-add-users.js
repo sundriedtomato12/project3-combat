@@ -3,40 +3,40 @@ module.exports = {
     const usersList = [
       {
         username: 'chickfila',
-        password: 'password123',
+        password: 'sh7!f9jH0hJD2#9F)_jshDsj',
         level: 1,
         game_state: JSON.stringify({
-          status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: 1, health: { player: null, opponent: null }, gameStats: { played: 0, won: 0, lost: 0 },
+          status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: null, health: { player: null, opponent: null }, gameStats: { played: 0, won: 0, lost: 0 },
         }),
         created_at: new Date(),
         updated_at: new Date(),
       },
       {
         username: 'spicynugz',
-        password: 'password123',
+        password: '2dD2dFt4@9J8ngF8n)8c',
         level: 2,
         game_state: JSON.stringify({
-          status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: 1, health: { player: null, opponent: null }, gameStats: { played: 0, won: 0, lost: 0 },
+          status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: null, health: { player: null, opponent: null }, gameStats: { played: 0, won: 0, lost: 0 },
         }),
         created_at: new Date(),
         updated_at: new Date(),
       },
       {
         username: 'mcspicy',
-        password: 'password123',
+        password: '7d)h@hd7fNmfK35Jsk%',
         level: 3,
         game_state: JSON.stringify({
-          status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: 1, health: { player: null, opponent: null }, gameStats: { played: 0, won: 0, lost: 0 },
+          status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: null, health: { player: null, opponent: null }, gameStats: { played: 0, won: 0, lost: 0 },
         }),
         created_at: new Date(),
         updated_at: new Date(),
       },
       {
         username: 'springchickz',
-        password: 'password123',
+        password: 'pk(jd)2JS9jf*fgeJf*ng)2',
         level: 4,
         game_state: JSON.stringify({
-          status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: 1, health: { player: null, opponent: null }, gameStats: { played: 0, won: 0, lost: 0 },
+          status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: null, health: { player: null, opponent: null }, gameStats: { played: 0, won: 0, lost: 0 },
         }),
         created_at: new Date(),
         updated_at: new Date(),

@@ -31,7 +31,7 @@ export default function initUsersController(db) {
           username: player.username,
           level: player.level,
           game_state: player.game_state,
-          loggedIn: req.cookies.loggedIn,
+          loggedIn: 'true',
         };
         console.log('player info');
         console.log(playerInfo);
@@ -51,10 +51,10 @@ export default function initUsersController(db) {
 
   const root = async (req, res) => {
     let loggedIn;
-    if (req.cookies.loggedIn === true) {
-      loggedIn = true;
+    if (req.cookies.loggedIn !== undefined) {
+      loggedIn = 'true';
     } else {
-      loggedIn = false;
+      loggedIn = 'false';
     }
     res.render('main', { loggedIn });
   };
@@ -78,7 +78,7 @@ export default function initUsersController(db) {
         res.send('<h1>There was an error! Please try logging in again.<br><a href="/login">Login Page</a></h1>');
       } else if (playerInfo != null) {
         if (verifyHash(req.body.loginpassword, playerInfo.password)) {
-          res.cookie('loggedIn', generateHash(playerInfo.username));
+          res.cookie('loggedIn', 'true');
           res.cookie('userId', playerInfo.id);
           res.redirect('/');
         } else {
@@ -197,7 +197,7 @@ export default function initUsersController(db) {
   };
 
   const damage = (healthPoints) => {
-    const damageDone = Math.floor(Math.random() * healthPoints) + 1;
+    const damageDone = Math.floor(Math.random() * healthPoints) + 10;
     return damageDone;
   };
 
@@ -290,10 +290,11 @@ export default function initUsersController(db) {
         },
       });
 
-      const damageDone = damage(player.game_state.health.player / 2);
+      const damageDone = damage(player.game_state.health.player);
       console.log('damage:');
       console.log(damageDone);
       let newHealth = 0;
+
       if (damageDone >= player.game_state.health.player) {
         newHealth = null;
       } else {
