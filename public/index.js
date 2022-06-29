@@ -11,8 +11,8 @@ gameDiv.setAttribute('id', 'game-div');
 const gameStatus = document.createElement('p');
 gameStatus.setAttribute('id', 'game-status');
 
-const gameStats = document.createElement('p');
-gameStats.setAttribute('id', 'game-stats');
+const mainImage = document.createElement('img');
+mainImage.setAttribute('id', 'main-image');
 
 const battleDiv = document.createElement('div');
 battleDiv.setAttribute('id', 'battle-div');
@@ -23,6 +23,9 @@ playerBox.setAttribute('id', 'player-box');
 const playerInfo = document.createElement('p');
 playerInfo.setAttribute('id', 'player-info');
 
+const playerHealthBar = document.createElement('progress');
+playerHealthBar.setAttribute('id', 'player-health-bar');
+
 const playerCanvas = document.createElement('CANVAS');
 playerCanvas.setAttribute('id', 'player-canvas');
 const playerContext = playerCanvas.getContext('2d');
@@ -32,6 +35,9 @@ opponentBox.setAttribute('id', 'opponent-box');
 
 const opponentInfo = document.createElement('p');
 opponentInfo.setAttribute('id', 'opponent-info');
+
+const opponentHealthBar = document.createElement('progress');
+opponentHealthBar.setAttribute('id', 'opponent-health-bar');
 
 const opponentCanvas = document.createElement('CANVAS');
 opponentCanvas.setAttribute('id', 'opponent-canvas');
@@ -75,6 +81,8 @@ let playerFrameCount = 0;
 let opponentFrameCount = 0;
 let playerCount = 0;
 let opponentCount = 0;
+let playerReqAnimaFrame;
+let opponentReqAnimaFrame;
 
 const spriteAnimations = {
   eggAttack: {
@@ -161,7 +169,6 @@ if (window.location.pathname === '/') {
   headerDiv.appendChild(header);
   document.body.appendChild(gameDiv);
   gameDiv.appendChild(gameStatus);
-  gameDiv.appendChild(playerCanvas);
   document.body.appendChild(battleDiv);
   document.body.appendChild(gameButtons);
   axios.get('/playerInfo').then((response) => {
@@ -169,12 +176,16 @@ if (window.location.pathname === '/') {
     console.log(response.data);
     gameButtons.appendChild(loginOrLogout);
     if (response.data.loggedIn === 'false') {
-      gameStatus.innerHTML = 'Welcome! Please log in to play!';
-      loginOrLogout.innerHTML = 'Login';
+      mainImage.src = 'mainchick.png';
+      gameDiv.appendChild(mainImage);
+      gameStatus.innerHTML = 'Welcome! Please log in or sign up to play!';
+      loginOrLogout.innerHTML = 'Log in / Sign up';
       loginOrLogout.addEventListener('click', () => {
         window.location.pathname = '/login';
       });
     } else if (response.data.loggedIn === 'true') {
+      gameButtons.removeChild(loginOrLogout);
+      gameDiv.appendChild(playerCanvas);
       loginOrLogout.innerHTML = 'Logout';
       loginOrLogout.addEventListener('click', () => {
         window.location.pathname = '/logout';
@@ -199,11 +210,13 @@ if (window.location.pathname === '/') {
           playerY = spriteAnimations[playerCharacter].loc[playerFrameCount].y;
           playerFrameCount += 1;
           playerCount = 0;
+          console.log(playerCount, 'playercount!!!');
         }
         if (playerFrameCount > 1) {
           playerFrameCount = 0;
         }
-        requestAnimationFrame(animatePlayer);
+        playerReqAnimaFrame = requestAnimationFrame(animatePlayer);
+        console.log('bounce animation');
       };
       if (response.data.game_state.status === 'inactive') {
         gameStatus.innerHTML = `Welcome, ${response.data.username}!<br>You are currently level ${response.data.level}<br>You have played ${response.data.game_state.gameStats.played} games in total, won ${response.data.game_state.gameStats.won} games and lost ${response.data.game_state.gameStats.lost} games so far`;
@@ -215,21 +228,28 @@ if (window.location.pathname === '/') {
           }).catch((error) => console.log(error));
         };
         gameButtons.appendChild(battleButton);
+        gameButtons.appendChild(loginOrLogout);
       } else if (response.data.game_state.status === 'active') {
         console.log('battle active');
         gameStatus.innerHTML = 'Battle-in-progress!';
-        gameDiv.appendChild(gameStats);
         battleDiv.appendChild(playerBox);
         battleDiv.appendChild(opponentBox);
         playerBox.appendChild(playerInfo);
+        playerBox.appendChild(playerHealthBar);
         playerBox.appendChild(playerCanvas);
         opponentBox.appendChild(opponentInfo);
+        opponentBox.appendChild(opponentHealthBar);
         opponentBox.appendChild(opponentCanvas);
         gameButtons.appendChild(attackButton);
         gameButtons.appendChild(defendButton);
         gameButtons.appendChild(endBattleButton);
+        gameButtons.appendChild(loginOrLogout);
         playerInfo.innerHTML = `${response.data.username}<br>Level ${response.data.level}<br>${response.data.game_state.health.player} HP`;
+        playerHealthBar.value = response.data.game_state.health.player;
+        playerHealthBar.max = response.data.game_state.health.player;
         opponentInfo.innerHTML = `${response.data.game_state.currentOpponent}<br>Level ${response.data.game_state.opponentLevel}<br>${response.data.game_state.health.opponent} HP`;
+        opponentHealthBar.value = response.data.game_state.health.opponent;
+        opponentHealthBar.max = response.data.game_state.health.opponent;
         if (response.data.game_state.opponentLevel === 1) {
           opponentCharacter = 'eggIdle';
         } else if (response.data.game_state.opponentLevel === 2) {
@@ -255,53 +275,94 @@ if (window.location.pathname === '/') {
           if (opponentFrameCount > 1) {
             opponentFrameCount = 0;
           }
-          requestAnimationFrame(animateOpponent);
+          opponentReqAnimaFrame = requestAnimationFrame(animateOpponent);
         };
         animateOpponent();
         animatePlayer();
         attackButton.innerHTML = 'Attack!';
         attackButton.onclick = () => {
+          document.getElementById('attack-button').disabled = true;
+          document.getElementById('defend-button').disabled = false;
           axios.put('/attack').then((res) => {
+            cancelAnimationFrame(playerReqAnimaFrame);
+            cancelAnimationFrame(opponentReqAnimaFrame);
             playerCharacter = playerCharacter.replace('Idle', 'Attack');
             opponentCharacter = opponentCharacter.replace('Idle', 'Defend');
             animatePlayer();
             animateOpponent();
             let message = '';
             if (res.data.game === 'won') {
-              message = `You did ${res.data.damage} damage! You won the battle and levelled up!`;
+              message = `You did ${res.data.damage} damage!<br>You won the battle and levelled up!`;
+              opponentInfo.innerHTML = `${res.data.game_state.currentOpponent}<br>Level ${res.data.game_state.opponentLevel}<br>0 HP`;
+              opponentHealthBar.value = 0;
+              setTimeout(() => { window.location.reload(); }, 5000);
             } else if (res.data.game === 'reborn') {
-              message = `You did ${res.data.damage} damage! You won the battle and you are reborn as a chick! Back to level 1 :P`;
+              message = `You did ${res.data.damage} damage!<br>You won the battle and you are reborn as a chick!<br>Back to level 1 :P`;
+              opponentInfo.innerHTML = `${res.data.game_state.currentOpponent}<br>Level ${res.data.game_state.opponentLevel}<br>0 HP`;
+              opponentHealthBar.value = 0;
+              setTimeout(() => { window.location.reload(); }, 5000);
             } else {
               message = `You did ${res.data.damage} damage!`;
+              opponentInfo.innerHTML = `${res.data.game_state.currentOpponent}<br>Level ${res.data.game_state.opponentLevel}<br>${res.data.game_state.health.opponent} HP`;
+              opponentHealthBar.value = res.data.game_state.health.opponent;
             }
-            setTimeout(() => { alert(message);
-              window.location.reload(); }, 1500);
+            gameStatus.innerHTML = message;
+
+            setTimeout(() => {
+              cancelAnimationFrame(playerReqAnimaFrame);
+              cancelAnimationFrame(opponentReqAnimaFrame);
+              playerCharacter = playerCharacter.replace('Attack', 'Idle');
+              opponentCharacter = opponentCharacter.replace('Defend', 'Idle');
+              animatePlayer();
+              animateOpponent();
+            }, 2000);
           }).catch((error) => console.log(error));
         };
 
         defendButton.innerHTML = 'Defend!';
         defendButton.onclick = () => {
+          document.getElementById('attack-button').disabled = false;
+          document.getElementById('defend-button').disabled = true;
           axios.put('/defend').then((res) => {
+            cancelAnimationFrame(playerReqAnimaFrame);
+            cancelAnimationFrame(opponentReqAnimaFrame);
             playerCharacter = playerCharacter.replace('Idle', 'Defend');
             opponentCharacter = opponentCharacter.replace('Idle', 'Attack');
             animatePlayer();
             animateOpponent();
             let message = '';
             if (res.data.game === 'lost') {
-              message = `Opponent did ${res.data.damage} damage! You\'re outta HP, man, you lost!`;
+              message = `Opponent did ${res.data.damage} damage!<br>You\'re outta HP!<br>You lost!`;
+              playerInfo.innerHTML = `${res.data.username}<br>Level ${res.data.level}<br>0 HP`;
+              playerHealthBar.value = 0;
+              setTimeout(() => { window.location.reload(); }, 5000);
             } else {
               message = `Opponent did ${res.data.damage} damage!`;
+              playerInfo.innerHTML = `${res.data.username}<br>Level ${res.data.level}<br>${res.data.game_state.health.player} HP`;
+              playerHealthBar.value = res.data.game_state.health.player;
             }
-            setTimeout(() => { alert(message);
-              window.location.reload(); }, 1500);
+            gameStatus.innerHTML = message;
+            setTimeout(() => {
+              cancelAnimationFrame(playerReqAnimaFrame);
+              cancelAnimationFrame(opponentReqAnimaFrame);
+              playerCharacter = playerCharacter.replace('Defend', 'Idle');
+              opponentCharacter = opponentCharacter.replace('Attack', 'Idle');
+              animatePlayer();
+              animateOpponent();
+            }, 2000);
           }).catch((error) => console.log(error));
         };
 
         endBattleButton.innerHTML = 'Flee and End Battle!';
         endBattleButton.onclick = () => {
-          axios.put('/endBattle').then(() => {
-            window.location.reload();
-          }).catch((error) => console.log(error));
+          if (Math.floor(Math.random() * 2) === 0) {
+            gameStatus.innerHTML = 'Yikes!<br> Opponent refused to let you leave!';
+          } else {
+            axios.put('/endBattle').then(() => {
+              gameStatus.innerHTML = 'You managed to escape the battle!';
+              setTimeout(() => { window.location.reload(); }, 2000);
+            }).catch((error) => console.log(error));
+          }
         };
 
         if (response.data.game_state.currentTurn === 'player') {

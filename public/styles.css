@@ -1,27 +1,76 @@
 body {
   background-color: white;
   font-family: "Press Start 2P";
+  text-align: center;
+}
+
+input#login-button,
+input#signup-button,
+button {
+  background-color: lightgray;
+  font-family: "Press Start 2P";
+  transform: scale(1, 1.2);
+  margin: 15px 0px 5px 0px;
+  padding: 4px;
+}
+
+button#battle-button,
+button#attack-button,
+button#defend-button,
+button#end-battle-button,
+button#login-or-logout {
+  margin: 0px 5px 0px 5px;
+}
+
+input#loginusername,
+input#loginpassword,
+input#signupusername,
+input#signuppassword {
+  background-color: white;
+  font-family: "Press Start 2P";
+  transform: scale(1, 1.2);
+  margin: 5px 0px 5px 0px;
+  padding: 4px;
+}
+
+canvas {
+  margin: 0 auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+span {
+  align-content: center;
+}
+
+p#player-info,
+p#opponent-info {
+  display: block;
+}
+
+progress {
+  -webkit-appearance: none;
+  border: black 0.5px solid;
+}
+progress[value]::-webkit-progress-bar {
+  background-color: grey;
+}
+
+progress[value]::-webkit-progress-value {
+  background-color: rgb(49, 207, 35);
 }
 
 h1,
 label,
-input {
+p {
   display: inline-block;
+  margin: 15px 0px 10px 0px;
   transform: scale(1, 1.2);
-  margin: 8px 0px 8px 0px;
 }
 
-div {
-  border: solid 1px black;
-}
-
-img {
-  border: solid 1px red;
-  width: 150px;
-  height: 150px;
-}
-
-#player-img {
+div.signup {
+  margin-top: 10px;
 }
 
 #battle-div {
@@ -31,4 +80,10 @@ img {
 #player-box,
 #opponent-box {
   flex: 1 1 50%;
+}
+
+img#main-image {
+  width: 205px;
+  height: 205px;
+  align-content: center;
 }

@@ -197,7 +197,7 @@ export default function initUsersController(db) {
   };
 
   const damage = (healthPoints) => {
-    const damageDone = Math.floor(Math.random() * healthPoints) + 10;
+    const damageDone = Math.floor(Math.random() * (healthPoints * 0.75)) + 10;
     return damageDone;
   };
 
@@ -241,7 +241,7 @@ export default function initUsersController(db) {
         const updatedPlayer = await player.update({
           level: player.level + 1,
           game_state: {
-            status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: null, health: { player: null, opponent: null }, gameStats: { played: player.game_state.gameStats.played + 1, won: player.game_state.gameStats.won + 1, lost: player.game_state.gameStats.lost },
+            status: 'inactive', currentOpponent: player.game_state.currentOpponent, currentTurn: null, opponentLevel: player.game_state.opponentLevel, health: { player: 0, opponent: 0 }, gameStats: { played: player.game_state.gameStats.played + 1, won: player.game_state.gameStats.won + 1, lost: player.game_state.gameStats.lost },
           },
           updated_at: new Date(),
         });
@@ -260,7 +260,7 @@ export default function initUsersController(db) {
         const updatedPlayer = await player.update({
           level: 1,
           game_state: {
-            status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: null, health: { player: null, opponent: null }, gameStats: { played: player.game_state.gameStats.played + 1, won: player.game_state.gameStats.won + 1, lost: player.game_state.gameStats.lost },
+            status: 'inactive', currentOpponent: player.game_state.currentOpponent, currentTurn: null, opponentLevel: player.game_state.opponentLevel, health: { player: 0, opponent: 0 }, gameStats: { played: player.game_state.gameStats.played + 1, won: player.game_state.gameStats.won + 1, lost: player.game_state.gameStats.lost },
           },
           updated_at: new Date(),
         });
@@ -311,6 +311,7 @@ export default function initUsersController(db) {
 
         const playerInfo = {
           id: updatedPlayer.id,
+          level: updatedPlayer.level,
           username: updatedPlayer.username,
           game_state: updatedPlayer.game_state,
           damage: damageDone,
@@ -322,7 +323,7 @@ export default function initUsersController(db) {
       } else {
         const updatedPlayer = await player.update({
           game_state: {
-            status: 'inactive', currentOpponent: null, currentTurn: null, opponentLevel: null, health: { player: null, opponent: null }, gameStats: { played: player.game_state.gameStats.played + 1, won: player.game_state.gameStats.won, lost: player.game_state.gameStats.lost + 1 },
+            status: 'inactive', currentOpponent: player.game_state.currentOpponent, currentTurn: null, opponentLevel: player.game_state.opponentLevel, health: { player: 0, opponent: 0 }, gameStats: { played: player.game_state.gameStats.played + 1, won: player.game_state.gameStats.won, lost: player.game_state.gameStats.lost + 1 },
           },
           updated_at: new Date(),
         });
