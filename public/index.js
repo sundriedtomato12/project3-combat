@@ -64,26 +64,6 @@ defendButton.setAttribute('id', 'defend-button');
 const loginButton = document.getElementById('login-button');
 const signupButton = document.getElementById('signup-button');
 
-const width = playerCanvas.width = opponentCanvas.width = 205;
-const height = playerCanvas.height = opponentCanvas.height = 205;
-const frameWidth = 410;
-const frameHeight = 410;
-const xPos = 0;
-const yPos = 0;
-const scale = 0.5;
-let playerCharacter = '';
-let opponentCharacter = '';
-let playerX = 0;
-let playerY = 0;
-let opponentX = 0;
-let opponentY = 0;
-let playerFrameCount = 0;
-let opponentFrameCount = 0;
-let playerCount = 0;
-let opponentCount = 0;
-let playerReqAnimaFrame;
-let opponentReqAnimaFrame;
-
 const spriteAnimations = {
   eggAttack: {
     loc: [
@@ -164,20 +144,38 @@ playerImage.src = 'combatchicks-spritesheet.png';
 const opponentImage = new Image();
 opponentImage.src = 'combatchicks-spritesheet.png';
 
+const width = playerCanvas.width = opponentCanvas.width = 205;
+const height = playerCanvas.height = opponentCanvas.height = 205;
+const frameWidth = 410;
+const frameHeight = 410;
+const xPos = 0;
+const yPos = 0;
+const scale = 0.5;
+let playerCharacter = '';
+let opponentCharacter = '';
+let playerX = 0;
+let playerY = 0;
+let opponentX = 0;
+let opponentY = 0;
+let playerFrameCount = 0;
+let opponentFrameCount = 0;
+let playerCount = 0;
+let opponentCount = 0;
+let playerReqAnimaFrame;
+let opponentReqAnimaFrame;
+
 if (window.location.pathname === '/') {
-  document.body.appendChild(headerDiv);
   headerDiv.appendChild(header);
+  document.body.appendChild(headerDiv);
   document.body.appendChild(gameDiv);
-  gameDiv.appendChild(gameStatus);
   document.body.appendChild(battleDiv);
   document.body.appendChild(gameButtons);
   axios.get('/playerInfo').then((response) => {
-    console.log('response data!!');
-    console.log(response.data);
     gameButtons.appendChild(loginOrLogout);
     if (response.data.loggedIn === 'false') {
       mainImage.src = 'mainchick.png';
       gameDiv.appendChild(mainImage);
+      gameDiv.appendChild(gameStatus);
       gameStatus.innerHTML = 'Welcome! Please log in or sign up to play!';
       loginOrLogout.innerHTML = 'Log in / Sign up';
       loginOrLogout.addEventListener('click', () => {
@@ -185,6 +183,7 @@ if (window.location.pathname === '/') {
       });
     } else if (response.data.loggedIn === 'true') {
       gameButtons.removeChild(loginOrLogout);
+      gameDiv.appendChild(gameStatus);
       gameDiv.appendChild(playerCanvas);
       loginOrLogout.innerHTML = 'Logout';
       loginOrLogout.addEventListener('click', () => {
