@@ -294,11 +294,15 @@ if (window.location.pathname === '/') {
               message = `You did ${res.data.damage} damage!<br>You won the battle and levelled up!`;
               opponentInfo.innerHTML = `${res.data.game_state.currentOpponent}<br>Level ${res.data.game_state.opponentLevel}<br>0 HP`;
               opponentHealthBar.value = 0;
+              document.getElementById('defend-button').disabled = true;
+              document.getElementById('end-battle-button').disabled = true;
               setTimeout(() => { window.location.reload(); }, 5000);
             } else if (res.data.game === 'reborn') {
-              message = `You did ${res.data.damage} damage!<br>You won the battle and you are reborn as a chick!<br>Back to level 1 :P`;
+              message = `You did ${res.data.damage} damage!<br>You won the battle and you are reborn as an egg!<br>Back to level 1 :P`;
               opponentInfo.innerHTML = `${res.data.game_state.currentOpponent}<br>Level ${res.data.game_state.opponentLevel}<br>0 HP`;
               opponentHealthBar.value = 0;
+              document.getElementById('defend-button').disabled = true;
+              document.getElementById('end-battle-button').disabled = true;
               setTimeout(() => { window.location.reload(); }, 5000);
             } else {
               message = `You did ${res.data.damage} damage!`;
@@ -334,6 +338,8 @@ if (window.location.pathname === '/') {
               message = `Opponent did ${res.data.damage} damage!<br>You\'re outta HP!<br>You lost!`;
               playerInfo.innerHTML = `${res.data.username}<br>Level ${res.data.level}<br>0 HP`;
               playerHealthBar.value = 0;
+              document.getElementById('attack-button').disabled = true;
+              document.getElementById('end-battle-button').disabled = true;
               setTimeout(() => { window.location.reload(); }, 5000);
             } else {
               message = `Opponent did ${res.data.damage} damage!`;
@@ -396,7 +402,11 @@ if (window.location.pathname === '/login') {
       alert('Please type in a password!');
     }
 
-    if (username !== '' && password !== '') {
+    if (password.length < 8) {
+      alert('Please use at least 8 characters for your password!');
+    }
+
+    if (username !== '' && password !== '' && password.length > 7) {
       axios.post('/signup', {
         username,
         password,
