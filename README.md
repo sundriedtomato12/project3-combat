@@ -4,7 +4,7 @@
 
 Combat Chicks is a chicken-themed turn-based combat game.
 
-## Basic features
+## Base features
 
 - [ x ] Users able to create accounts
 - [ x ] Users able to battle other users' characters
@@ -12,6 +12,5 @@ Combat Chicks is a chicken-themed turn-based combat game.
 - [ x ] Users will level up and evolve with each win
   _Users will go back to level 1 if they win at max level (level 4)_
 
-## Additional features
-
-- [ ] Users able to fight real time with other users (multiplayer)
+## Heroku Deployment
+https://ptbc2-combatchicks.herokuapp.com/
