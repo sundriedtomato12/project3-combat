@@ -1,0 +1,122 @@
+body {
+  background-color: white;
+  font-family: "Press Start 2P";
+  text-align: center;
+}
+
+#battle-div {
+  display: flex;
+}
+#game-div {
+  display: block;
+  margin-bottom: 10px;
+}
+
+#game-buttons {
+  margin-top: 10px;
+}
+
+img#main-image {
+  width: 205px;
+  height: 205px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+input#login-button,
+input#signup-button,
+button {
+  background-color: lightgray;
+  font-family: "Press Start 2P";
+  transform: scale(1, 1.2);
+  margin: 15px 0px 5px 0px;
+  padding: 4px;
+}
+
+button#battle-button,
+button#attack-button,
+button#defend-button,
+button#end-battle-button,
+button#login-or-logout {
+  margin: 10px;
+}
+
+input#loginusername,
+input#loginpassword,
+input#signupusername,
+input#signuppassword {
+  background-color: white;
+  font-family: "Press Start 2P";
+  transform: scale(1, 1.2);
+  margin: 5px 0px 5px 0px;
+  padding: 4px;
+}
+
+button#battle-button:hover,
+button#attack-button:hover,
+button#defend-button:hover,
+button#end-battle-button:hover,
+button#login-or-logout:hover,
+input#login-button:hover,
+input#signup-button:hover,
+button:hover {
+  box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.24);
+}
+
+button#battle-button:active,
+button#attack-button:active,
+button#defend-button:active,
+button#end-battle-button:active,
+button#login-or-logout:active,
+input#login-button:active,
+input#signup-button:active,
+button:active {
+  transform: scale(0.99);
+  box-shadow: 7px 7px 25px 1px rgba(0, 0, 0, 0.24);
+}
+
+canvas {
+  margin: 0 auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+span {
+  align-content: center;
+}
+
+p#player-info,
+p#opponent-info {
+  display: block;
+}
+
+progress {
+  -webkit-appearance: none;
+  border: black 0.5px solid;
+}
+progress[value]::-webkit-progress-bar {
+  background-color: grey;
+}
+
+progress[value]::-webkit-progress-value {
+  background-color: rgb(49, 207, 35);
+}
+
+h1,
+label,
+p {
+  display: inline-block;
+  margin: 15px 0px 10px 0px;
+  transform: scale(1, 1.2);
+}
+
+div.signup {
+  margin-top: 10px;
+}
+
+#player-box,
+#opponent-box {
+  flex: 1 1 50%;
+}
