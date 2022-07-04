@@ -1,3 +1,5 @@
+import './styles.css';
+
 const headerDiv = document.createElement('div');
 headerDiv.setAttribute('id', 'header-div');
 

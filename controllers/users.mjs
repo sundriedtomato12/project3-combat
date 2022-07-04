@@ -1,5 +1,6 @@
 import express from 'express';
 import jsSHA from 'jssha';
+import { resolve } from 'path';
 
 const SALT = 'ILOVECHICKEN';
 
@@ -56,7 +57,8 @@ export default function initUsersController(db) {
     } else {
       loggedIn = 'false';
     }
-    res.render('main', { loggedIn });
+    res.sendFile(resolve('dist', 'main.html'));
+    // res.render('main', { loggedIn });
   };
 
   const loginpage = (req, res) => {
