@@ -2,7 +2,7 @@
 
 ## Description
 
-Combat Chicks is a chicken-themed turn-based combat game.
+Combat Chicks is a chicken-themed turn-based combat game. Players start off at level 1 as an egg, then they level up with every battle won. The level 2 character is a half-hatched chick, level 3 character is a chick, and level 4 character is a rooster. If players win a battle at level 4, they will be reborn as an egg.
 
 ## Base features
 
