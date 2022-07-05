@@ -333,6 +333,7 @@ export default function initUsersController(db) {
         const playerInfo = {
           id: updatedPlayer.id,
           username: updatedPlayer.username,
+          level: updatedPlayer.level,
           game_state: updatedPlayer.game_state,
           damage: damageDone,
           game: 'lost',
