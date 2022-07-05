@@ -1,4 +1,5 @@
-# PTBC2-1 Project 3: Combat Chicks
+# Rocket Academy PTBC2-1 Project 3
+# Game name: Combat Chicks
 
 ## Description
 
