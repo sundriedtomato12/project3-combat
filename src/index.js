@@ -247,10 +247,10 @@ if (window.location.pathname === '/') {
         gameButtons.appendChild(loginOrLogout);
         playerInfo.innerHTML = `${response.data.username}<br>Level ${response.data.level}<br>${response.data.game_state.health.player} HP`;
         playerHealthBar.value = response.data.game_state.health.player;
-        playerHealthBar.max = response.data.game_state.health.player;
+        playerHealthBar.max = response.data.level * 100;
         opponentInfo.innerHTML = `${response.data.game_state.currentOpponent}<br>Level ${response.data.game_state.opponentLevel}<br>${response.data.game_state.health.opponent} HP`;
         opponentHealthBar.value = response.data.game_state.health.opponent;
-        opponentHealthBar.max = response.data.game_state.health.opponent;
+        opponentHealthBar.max = response.data.game_state.opponentLevel * 100;
         if (response.data.game_state.opponentLevel === 1) {
           opponentCharacter = 'eggIdle';
         } else if (response.data.game_state.opponentLevel === 2) {
