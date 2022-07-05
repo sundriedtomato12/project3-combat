@@ -7,8 +7,8 @@ Combat Chicks is a chicken-themed turn-based combat game. Players start off at l
 ## Base features
 
 - [ x ] Users able to create accounts
-- [ x ] Users able to battle other users' characters
-  _opponent will be matched to user's level, and opponent will be controlled by a computer while the character is rendered out_
+- [ x ] Users able to battle other users' characters.
+  _Game generates an opponent character by picking another random user from the database and renders the opponent's character out_
 - [ x ] Users will level up and evolve with each win
 - [ x ] Do sprite animation for characters
 
