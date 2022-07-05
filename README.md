@@ -10,6 +10,10 @@ Combat Chicks is a chicken-themed turn-based combat game. Players start off at l
 - [ x ] Users able to battle other users' characters
   _opponent will be matched to user's level, and opponent will be controlled by a computer while the character is rendered out_
 - [ x ] Users will level up and evolve with each win
+- [ x ] Do sprite animation for characters
 
 ## Heroku Deployment
 https://ptbc2-combatchicks.herokuapp.com/
+
+## References
+Referenced [this tutorial](https://www.youtube.com/watch?v=CY0HE277IBM) for sprite animation. But the art is done by me :)
