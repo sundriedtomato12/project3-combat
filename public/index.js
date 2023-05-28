@@ -209,13 +209,11 @@ if (window.location.pathname === '/') {
           playerY = spriteAnimations[playerCharacter].loc[playerFrameCount].y;
           playerFrameCount += 1;
           playerCount = 0;
-          console.log(playerCount, 'playercount!!!');
         }
         if (playerFrameCount > 1) {
           playerFrameCount = 0;
         }
         playerReqAnimaFrame = requestAnimationFrame(animatePlayer);
-        console.log('bounce animation');
       };
       if (response.data.game_state.status === 'inactive') {
         gameStatus.innerHTML = `Welcome, ${response.data.username}!<br>You are currently level ${response.data.level}<br>You have played ${response.data.game_state.gameStats.played} games in total, won ${response.data.game_state.gameStats.won} games and lost ${response.data.game_state.gameStats.lost} games so far`;
@@ -229,7 +227,6 @@ if (window.location.pathname === '/') {
         gameButtons.appendChild(battleButton);
         gameButtons.appendChild(loginOrLogout);
       } else if (response.data.game_state.status === 'active') {
-        console.log('battle active');
         gameStatus.innerHTML = 'Battle-in-progress!';
         battleDiv.appendChild(playerBox);
         battleDiv.appendChild(opponentBox);
@@ -411,7 +408,6 @@ if (window.location.pathname === '/login') {
         username,
         password,
       }).then((response) => {
-        console.log(response.data);
         if (response.data.existingUser === true) {
           alert('Username exists! Please pick another username :)');
         }

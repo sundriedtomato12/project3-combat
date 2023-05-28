@@ -34,8 +34,6 @@ export default function initUsersController(db) {
           game_state: player.game_state,
           loggedIn: 'true',
         };
-        console.log('player info');
-        console.log(playerInfo);
         res.json(playerInfo);
       }
       catch (error) {
@@ -62,7 +60,6 @@ export default function initUsersController(db) {
   };
 
   const loginpage = (req, res) => {
-    console.log(req.cookies.loggedIn);
     res.render('login');
   };
 
@@ -73,8 +70,6 @@ export default function initUsersController(db) {
           username: req.body.loginusername,
         },
       });
-
-      console.log('user', playerInfo);
 
       if (playerInfo === null) {
         res.send('<h1>There was an error! Please try logging in again.<br><a href="/login">Login Page</a></h1>');
@@ -94,7 +89,6 @@ export default function initUsersController(db) {
   };
 
   const signup = async (req, res) => {
-    console.log(req.body);
     try {
       const [user, created] = await db.User.findOrCreate({
         where: {
@@ -111,10 +105,8 @@ export default function initUsersController(db) {
         },
       });
       if (created) {
-        console.log('new user', user);
         res.json({ newUser: true });
       } else if (user) {
-        console.log('existing user', user);
         res.json({ existingUser: true });
       }
     }
@@ -151,12 +143,7 @@ export default function initUsersController(db) {
         }
       }
 
-      console.log('opponent array:');
-      console.log(opponentArray);
-
       const opponentName = opponentArray[Math.floor(Math.random() * opponentArray.length)];
-      console.log('opponent name:');
-      console.log(opponentName);
 
       const opponentInfo = await db.User.findOne({
         where: { username: opponentName },
@@ -212,8 +199,6 @@ export default function initUsersController(db) {
       });
 
       const damageDone = damage(player.game_state.health.opponent);
-      console.log('damage:');
-      console.log(damageDone);
       let newHealth = 0;
       if (damageDone >= player.game_state.health.opponent) {
         newHealth = null;
@@ -293,8 +278,6 @@ export default function initUsersController(db) {
       });
 
       const damageDone = damage(player.game_state.health.player);
-      console.log('damage:');
-      console.log(damageDone);
       let newHealth = 0;
 
       if (damageDone >= player.game_state.health.player) {
